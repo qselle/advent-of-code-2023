@@ -37,8 +37,9 @@ func charToInt(char uint8) int {
 	return int(char - '0')
 }
 
-func solvePartTwo(input []string) (total int) {
+func solve(input []string, digitLetters bool) int {
 	wg := sync.WaitGroup{}
+	sum := 0
 
 	for _, line := range input {
 		firstDigit, lastDigit := 0, 0
@@ -52,10 +53,12 @@ func solvePartTwo(input []string) (total int) {
 					return
 				}
 
-				for digit, digitByLetter := range digitByLetters {
-					if strings.HasPrefix(line[index:], digitByLetter) {
-						firstDigit = digit + 1
-						return
+				if digitLetters {
+					for digit, digitByLetter := range digitByLetters {
+						if strings.HasPrefix(line[index:], digitByLetter) {
+							firstDigit = digit + 1
+							return
+						}
 					}
 				}
 			}
@@ -70,55 +73,30 @@ func solvePartTwo(input []string) (total int) {
 					lastDigit = charToInt(char)
 					return
 				}
-				for digit, digitByLetter := range digitByLetters {
-					if strings.HasSuffix(line[:index+1], digitByLetter) {
-						lastDigit = digit + 1
-						return
+				if digitLetters {
+					for digit, digitByLetter := range digitByLetters {
+						if strings.HasSuffix(line[:index+1], digitByLetter) {
+							lastDigit = digit + 1
+							return
+						}
 					}
 				}
 			}
 		}()
 
 		wg.Wait()
-		total += firstDigit*10 + lastDigit
+		sum += firstDigit*10 + lastDigit
 	}
-	return
+	return sum
 
 }
 
+func solvePartTwo(input []string) (total int) {
+	return solve(input, true)
+}
+
 func solvePartOne(input []string) (total int) {
-	wg := sync.WaitGroup{}
-
-	for _, line := range input {
-		firstDigit, lastDigit := 0, 0
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			for index := 0; index < len(line); index++ {
-				char := line[index]
-				if isNumber(char) {
-					firstDigit = charToInt(char)
-					return
-				}
-			}
-		}()
-
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			for index := len(line) - 1; index >= 0; index-- {
-				char := line[index]
-				if isNumber(char) {
-					lastDigit = charToInt(char)
-					return
-				}
-			}
-		}()
-
-		wg.Wait()
-		total += firstDigit*10 + lastDigit
-	}
-	return
+	return solve(input, false)
 }
 
 func main() {

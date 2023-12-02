@@ -33,7 +33,7 @@ func parsePuzzleInput(input []string) []Game {
 	for _, line := range input {
 		currentGame := Game{}
 		byGameId := strings.Split(line, ":")
-		currentGame.id, err = strconv.Atoi(byGameId[0][len("Game "):])
+		currentGame.id, err = strconv.Atoi(strings.TrimPrefix(byGameId[0], "Game "))
 		if err != nil {
 			panic(err)
 		}
@@ -95,7 +95,9 @@ func solvePartOne(games []Game) int {
 nextGame:
 	for _, game := range games {
 		for _, gameSet := range game.sets {
-			if gameSet.red > redCubesInBag || gameSet.green > greenCubesInBag || gameSet.blue > blueCubesInBag {
+			if gameSet.red > redCubesInBag ||
+				gameSet.green > greenCubesInBag ||
+				gameSet.blue > blueCubesInBag {
 				continue nextGame
 			}
 		}
