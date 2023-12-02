@@ -1,7 +1,6 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"os"
 	"strings"
@@ -22,20 +21,20 @@ var (
 	}
 )
 
+func readFileByLine(inputFile string) []string {
+	content, err := os.ReadFile(inputFile)
+	if err != nil {
+		panic(err)
+	}
+	return strings.Split(string(content), "\n")
+}
+
 func isNumber(char uint8) bool {
 	return char >= '0' && char <= '9'
 }
 
 func charToInt(char uint8) int {
 	return int(char - '0')
-}
-
-func parsePuzzleInput(inputFile string) []string {
-	content, err := os.ReadFile(inputFile)
-	if err != nil {
-		panic(err)
-	}
-	return strings.Split(string(content), "\n")
 }
 
 func solvePartTwo(input []string) (total int) {
@@ -123,16 +122,7 @@ func solvePartOne(input []string) (total int) {
 }
 
 func main() {
-	puzzlePart := flag.Int("part", 1, "Puzzle part to solve (1 or 2)")
-	flag.Parse()
-
-	input := parsePuzzleInput("input.txt")
-	switch *puzzlePart {
-	case 1:
-		fmt.Println(solvePartOne(input))
-	case 2:
-		fmt.Println(solvePartTwo(input))
-	default:
-		fmt.Println("Invalid puzzle part")
-	}
+	input := readFileByLine("input.txt")
+	fmt.Println("Part 1:", solvePartOne(input))
+	fmt.Println("Part 2:", solvePartTwo(input))
 }

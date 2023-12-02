@@ -1,14 +1,13 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"os"
 	"strconv"
 	"strings"
 )
 
-func parsePuzzleInput(inputFile string) []string {
+func readFileByLine(inputFile string) []string {
 	content, err := os.ReadFile(inputFile)
 	if err != nil {
 		panic(err)
@@ -16,94 +15,97 @@ func parsePuzzleInput(inputFile string) []string {
 	return strings.Split(string(content), "\n")
 }
 
-func solvePartTwo(input []string) (total int) {
-	for gameIndex, line := range input {
-		line = strings.TrimPrefix(line, fmt.Sprintf("Game %d:", gameIndex+1))
-		redCubesMin, greenCubesMin, blueCubesMin := 0, 0, 0
-		for _, set := range strings.Split(line, ";") {
-			redCubes, greenCubes, blueCubes := 0, 0, 0
-			for _, subset := range strings.Split(set, ",") {
-				currentCube := strings.Fields(subset)
-				cubesNumber, err := strconv.Atoi(currentCube[0])
-				if err != nil {
-					panic(err)
-				}
-				switch currentCube[1] {
-				case "red":
-					redCubes += cubesNumber
-				case "green":
-					greenCubes += cubesNumber
-				case "blue":
-					blueCubes += cubesNumber
-				default:
-					panic("Invalid cube color")
-				}
-			}
-			if redCubes > redCubesMin {
-				redCubesMin = redCubes
-			}
-			if greenCubes > greenCubesMin {
-				greenCubesMin = greenCubes
-			}
-			if blueCubes > blueCubesMin {
-				blueCubesMin = blueCubes
-			}
-		}
-		total += redCubesMin * greenCubesMin * blueCubesMin
-	}
-	return
+type Set struct {
+	red   int
+	green int
+	blue  int
 }
 
-func solvePartOne(input []string) (total int) {
-	const (
-		redCubesInBag   = 12
-		greenCubesInBag = 13
-		blueCubesInBag  = 14
-	)
+type Game struct {
+	id   int
+	sets []Set
+}
 
-nextGame:
-	for gameIndex, line := range input {
-		line = strings.TrimPrefix(line, fmt.Sprintf("Game %d:", gameIndex+1))
+func parsePuzzleInput(input []string) []Game {
+	var games []Game
+	var err error
 
-		for _, set := range strings.Split(line, ";") {
-			redCubes, greenCubes, blueCubes := redCubesInBag, greenCubesInBag, blueCubesInBag
+	for _, line := range input {
+		currentGame := Game{}
+		byGameId := strings.Split(line, ":")
+		currentGame.id, err = strconv.Atoi(byGameId[0][len("Game "):])
+		if err != nil {
+			panic(err)
+		}
+		for _, set := range strings.Split(byGameId[1], ";") {
+			currentSet := Set{}
+
 			for _, subset := range strings.Split(set, ",") {
 				currentCube := strings.Fields(subset)
 				cubesNumber, err := strconv.Atoi(currentCube[0])
 				if err != nil {
 					panic(err)
 				}
+
 				switch currentCube[1] {
 				case "red":
-					redCubes -= cubesNumber
+					currentSet.red += cubesNumber
 				case "green":
-					greenCubes -= cubesNumber
+					currentSet.green += cubesNumber
 				case "blue":
-					blueCubes -= cubesNumber
+					currentSet.blue += cubesNumber
 				default:
 					panic("Invalid cube color")
 				}
 			}
-			if redCubes < 0 || greenCubes < 0 || blueCubes < 0 {
+			currentGame.sets = append(currentGame.sets, currentSet)
+		}
+		games = append(games, currentGame)
+	}
+	return games
+}
+
+func solvePartTwo(games []Game) int {
+	sum := 0
+
+	for _, game := range games {
+		redCubesMin, greenCubesMin, blueCubesMin := 0, 0, 0
+		for _, gameSet := range game.sets {
+			if gameSet.red > redCubesMin {
+				redCubesMin = gameSet.red
+			}
+			if gameSet.green > greenCubesMin {
+				greenCubesMin = gameSet.green
+			}
+			if gameSet.blue > blueCubesMin {
+				blueCubesMin = gameSet.blue
+			}
+		}
+		sum += redCubesMin * greenCubesMin * blueCubesMin
+	}
+	return sum
+}
+
+func solvePartOne(games []Game) int {
+	const redCubesInBag = 12
+	const greenCubesInBag = 13
+	const blueCubesInBag = 14
+	sum := 0
+
+nextGame:
+	for _, game := range games {
+		for _, gameSet := range game.sets {
+			if gameSet.red > redCubesInBag || gameSet.green > greenCubesInBag || gameSet.blue > blueCubesInBag {
 				continue nextGame
 			}
 		}
-		total += gameIndex + 1
+		sum += game.id
 	}
-	return
+	return sum
 }
 
 func main() {
-	puzzlePart := flag.Int("part", 1, "Puzzle part to solve (1 or 2)")
-	flag.Parse()
-
-	input := parsePuzzleInput("input.txt")
-	switch *puzzlePart {
-	case 1:
-		fmt.Println(solvePartOne(input))
-	case 2:
-		fmt.Println(solvePartTwo(input))
-	default:
-		fmt.Println("Invalid puzzle part")
-	}
+	input := parsePuzzleInput(readFileByLine("input.txt"))
+	fmt.Println("Part 1:", solvePartOne(input))
+	fmt.Println("Part 2:", solvePartTwo(input))
 }
