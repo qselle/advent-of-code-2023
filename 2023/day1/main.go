@@ -1,6 +1,7 @@
-package day1
+package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
 	"strings"
@@ -121,9 +122,12 @@ func solvePartOne(input []string) (total int) {
 	return
 }
 
-func Day1(puzzleInputPath string, puzzlePart int) {
-	input := parsePuzzleInput(puzzleInputPath)
-	switch puzzlePart {
+func main() {
+	puzzlePart := flag.Int("part", 1, "Puzzle part to solve (1 or 2)")
+	flag.Parse()
+
+	input := parsePuzzleInput("input.txt")
+	switch *puzzlePart {
 	case 1:
 		fmt.Println(solvePartOne(input))
 	case 2:

@@ -1,27 +1,6 @@
-package day1
+package main
 
 import "testing"
-
-func TestIsNumberValid(t *testing.T) {
-	if isNumber('a') {
-		t.Errorf("isNumber('a') = true; want false")
-	}
-	if !isNumber('0') {
-		t.Errorf("isNumber('0') = false; want true")
-	}
-	if !isNumber('9') {
-		t.Errorf("isNumber('9') = false; want true")
-	}
-}
-
-func TestCharToInt(t *testing.T) {
-	if charToInt('0') != 0 {
-		t.Errorf("charToInt('0') = %d; want 0", charToInt('0'))
-	}
-	if charToInt('9') != 9 {
-		t.Errorf("charToInt('9') = %d; want 9", charToInt('9'))
-	}
-}
 
 func TestSolvePartOne(t *testing.T) {
 	input := []string{
