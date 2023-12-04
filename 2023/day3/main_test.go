@@ -2,7 +2,7 @@ package main
 
 import "testing"
 
-func TestSolvePartOne(t *testing.T) {
+func TestPartNumbersSum(t *testing.T) {
 	input := []string{
 		"467..114..",
 		"...*......",
@@ -15,15 +15,16 @@ func TestSolvePartOne(t *testing.T) {
 		"...$.*....",
 		".664.598..",
 	}
+	es := ParseEngineSchematic(input)
 	expected := 4361
-	actual := solvePartOne(input)
+	actual := es.PartNumbersSum()
 
 	if actual != expected {
-		t.Errorf("solvePartOne(%v) = %d; want %d", input, actual, expected)
+		t.Errorf("PartNumbersSum(%v) = %d; want %d", input, actual, expected)
 	}
 }
 
-func TestSolvePartTwo(t *testing.T) {
+func TestGearRatiosSum(t *testing.T) {
 	input := []string{
 		"467..114..",
 		"...*......",
@@ -36,10 +37,11 @@ func TestSolvePartTwo(t *testing.T) {
 		"...$.*....",
 		".664.598..",
 	}
+	es := ParseEngineSchematic(input)
 	expected := 467835
-	actual := solvePartTwo(input)
+	actual := es.GearRatiosSum()
 
 	if actual != expected {
-		t.Errorf("solvePartTwo(%v) = %d; want %d", input, actual, expected)
+		t.Errorf("GearRatiosSum(%v) = %d; want %d", input, actual, expected)
 	}
 }

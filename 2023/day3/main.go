@@ -2,171 +2,126 @@ package main
 
 import (
 	"fmt"
-	"os"
-	"strings"
+	"github.com/quentinselle/aoc/2023/utils"
 	"unicode"
 )
 
-func readFileByLine(inputFile string) []string {
-	content, err := os.ReadFile(inputFile)
-	if err != nil {
-		panic(err)
-	}
-	return strings.Split(string(content), "\n")
+type Coordinates struct {
+	Y int
+	X int
 }
 
-type Position struct {
-	x int
-	y int
+type symbol string
+type Symbols map[Coordinates]symbol
+
+type Part struct {
+	Number      int
+	Coordinates []Coordinates
 }
 
-type SchemeSymbols map[Position]rune
-
-func (s SchemeSymbols) isPositionSymbol(currentPosition Position) bool {
-	_, found := s[currentPosition]
-	return found
-}
-
-func (s SchemeSymbols) isPositionAdjacent(currentPosition Position) bool {
-	for y := -1; y <= 1; y++ {
-		for x := -1; x <= 1; x++ {
-			if s.isPositionSymbol(Position{
-				currentPosition.x + x,
-				currentPosition.y + y,
-			}) {
-				return true
-			}
-		}
-	}
-	return false
-}
-
-func (s SchemeSymbols) isPositionSymbolGear(currentPosition Position) bool {
-	symbol, found := s[currentPosition]
-	return found && symbol == '*'
-}
-
-func (s SchemeSymbols) isPositionAdjacentToGear(currentPosition Position) (bool, Position) {
-	for y := -1; y <= 1; y++ {
-		for x := -1; x <= 1; x++ {
-			if s.isPositionSymbolGear(Position{
-				currentPosition.x + x,
-				currentPosition.y + y,
-			}) {
-				return true, Position{
-					currentPosition.x + x,
-					currentPosition.y + y,
+func (p Part) IsCoordinatesAdjacent(symbols Symbols) (bool, Coordinates) {
+	for _, coordinates := range p.Coordinates {
+		for y := -1; y <= 1; y++ {
+			for x := -1; x <= 1; x++ {
+				if _, found := symbols[Coordinates{coordinates.Y + y, coordinates.X + x}]; found {
+					return true, Coordinates{coordinates.Y + y, coordinates.X + x}
 				}
 			}
 		}
 	}
-	return false, Position{}
+	return false, Coordinates{}
 }
 
-func parseSymbols(input []string) SchemeSymbols {
-	engineSchemeSymbols := make(SchemeSymbols)
-	for y, line := range input {
-		for x, sym := range line {
-			if sym != '.' && !unicode.IsNumber(sym) {
-				engineSchemeSymbols[Position{x: x, y: y}] = sym
-			}
-		}
-	}
-	return engineSchemeSymbols
+type PossibleGear struct {
+	refs  int
+	ratio int
 }
 
-func solvePartOne(input []string) int {
+type PossibleGears map[Coordinates]PossibleGear
+
+type EngineSchematic struct {
+	Parts   []Part
+	Symbols Symbols
+}
+
+func (es EngineSchematic) PartNumbersSum() int {
 	sum := 0
-	engineSchemeSymbol := parseSymbols(input)
-	for y, line := range input {
-		adjacent := false
-		number := 0
-		for x, sym := range line {
-			if unicode.IsNumber(sym) {
-				if engineSchemeSymbol.isPositionAdjacent(Position{x, y}) {
-					adjacent = true
-				}
-				number = number*10 + int(sym-'0')
-				continue
-			}
-			if number > 0 && adjacent {
-				sum += number
-			}
-			adjacent = false
-			number = 0
-		}
-		if number > 0 && adjacent {
-			sum += number
+	for _, part := range es.Parts {
+		if found, _ := part.IsCoordinatesAdjacent(es.Symbols); found {
+			sum += part.Number
 		}
 	}
 	return sum
 }
 
-type PossibleGear struct {
-	ref   int
-	ratio int
-}
-
-type SchemePossibleGears map[Position]PossibleGear
-
-func solvePartTwo(input []string) int {
+func (es EngineSchematic) GearRatiosSum() int {
 	sum := 0
-	engineSchemeSymbol := parseSymbols(input)
-	possibleGear := make(SchemePossibleGears)
-	for y, line := range input {
-		adjacent := false
-		number := 0
-		gearPosition := Position{}
-		for x, sym := range line {
-			if unicode.IsNumber(sym) {
-				found, possibleGearPosition := engineSchemeSymbol.isPositionAdjacentToGear(Position{x, y})
-				if found {
-					gearPosition = possibleGearPosition
-					adjacent = true
-				}
-				number = number*10 + int(sym-'0')
-				continue
-			}
-			if number > 0 && adjacent {
-				gear, found := possibleGear[gearPosition]
-				if !found {
-					possibleGear[gearPosition] = PossibleGear{
-						ref:   1,
-						ratio: number,
-					}
-				} else {
-					gear.ref++
-					gear.ratio *= number
-					possibleGear[gearPosition] = gear
-				}
-			}
-			adjacent = false
-			number = 0
-		}
-		if number > 0 && adjacent {
-			gear, found := possibleGear[gearPosition]
-			if !found {
-				possibleGear[gearPosition] = PossibleGear{
-					ref:   1,
-					ratio: number,
-				}
-			} else {
-				gear.ref++
-				gear.ratio *= number
-				possibleGear[gearPosition] = gear
-			}
+
+	// keep "*" symbols only, so IsCoordinatesAdjacent will only match those.
+	for k, v := range es.Symbols {
+		if v != "*" {
+			delete(es.Symbols, k)
 		}
 	}
-	for _, v := range possibleGear {
-		if v.ref == 2 {
+
+	possibleGears := make(PossibleGears)
+	for _, part := range es.Parts {
+		if found, coordinates := part.IsCoordinatesAdjacent(es.Symbols); found {
+			possibleGear, found := possibleGears[coordinates]
+			if !found {
+				possibleGear = PossibleGear{1, part.Number}
+			} else {
+				possibleGear.refs++
+				possibleGear.ratio *= part.Number
+			}
+			possibleGears[coordinates] = possibleGear
+		}
+	}
+
+	for _, v := range possibleGears {
+		if v.refs == 2 {
 			sum += v.ratio
 		}
 	}
 	return sum
 }
 
+func ParseEngineSchematic(input []string) *EngineSchematic {
+	es := &EngineSchematic{}
+	es.Symbols = make(Symbols)
+
+	for y, line := range input {
+		for x, char := range line {
+			if char != '.' && !unicode.IsNumber(char) {
+				es.Symbols[Coordinates{y, x}] = symbol(char)
+			}
+		}
+	}
+
+	for y, line := range input {
+		part := Part{}
+		for x, char := range line {
+			if unicode.IsNumber(char) {
+				part.Number = part.Number*10 + utils.RuneToInt(char)
+				part.Coordinates = append(part.Coordinates, Coordinates{y, x})
+				continue
+			}
+			if part.Number > 0 {
+				es.Parts = append(es.Parts, part)
+				part = Part{}
+			}
+		}
+		if part.Number > 0 {
+			es.Parts = append(es.Parts, part)
+			part = Part{}
+		}
+	}
+	return es
+}
+
 func main() {
-	input := readFileByLine("input.txt")
-	fmt.Println("Part 1:", solvePartOne(input))
-	fmt.Println("Part 2:", solvePartTwo(input))
+	input := utils.ReadFileByLine("input.txt")
+	es := ParseEngineSchematic(input)
+	fmt.Println("Part 1:", es.PartNumbersSum())
+	fmt.Println("Part 2:", es.GearRatiosSum())
 }
