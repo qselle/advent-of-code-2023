@@ -86,8 +86,8 @@ func (es EngineSchematic) GearRatiosSum() int {
 	return sum
 }
 
-func ParseEngineSchematic(input []string) *EngineSchematic {
-	es := &EngineSchematic{}
+func ParseEngineSchematic(input []string) EngineSchematic {
+	es := EngineSchematic{}
 	es.Symbols = make(Symbols)
 
 	for y, line := range input {
