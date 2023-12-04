@@ -2,9 +2,10 @@ package main
 
 import (
 	"fmt"
-	"os"
+	"github.com/quentinselle/aoc/2023/utils"
 	"strings"
 	"sync"
+	"unicode"
 )
 
 var (
@@ -21,22 +22,6 @@ var (
 	}
 )
 
-func readFileByLine(inputFile string) []string {
-	content, err := os.ReadFile(inputFile)
-	if err != nil {
-		panic(err)
-	}
-	return strings.Split(string(content), "\n")
-}
-
-func isNumber(char uint8) bool {
-	return char >= '0' && char <= '9'
-}
-
-func charToInt(char uint8) int {
-	return int(char - '0')
-}
-
 func solve(input []string, digitLetters bool) int {
 	wg := sync.WaitGroup{}
 	sum := 0
@@ -48,8 +33,8 @@ func solve(input []string, digitLetters bool) int {
 			defer wg.Done()
 			for index := 0; index < len(line); index++ {
 				char := line[index]
-				if isNumber(char) {
-					firstDigit = charToInt(char)
+				if unicode.IsNumber(rune(char)) {
+					firstDigit = utils.RuneToInt(rune(char))
 					return
 				}
 
@@ -69,8 +54,8 @@ func solve(input []string, digitLetters bool) int {
 			defer wg.Done()
 			for index := len(line) - 1; index >= 0; index-- {
 				char := line[index]
-				if isNumber(char) {
-					lastDigit = charToInt(char)
+				if unicode.IsNumber(rune(char)) {
+					lastDigit = utils.RuneToInt(rune(char))
 					return
 				}
 				if digitLetters {
@@ -100,7 +85,7 @@ func solvePartOne(input []string) (total int) {
 }
 
 func main() {
-	input := readFileByLine("input.txt")
+	input := utils.ReadFileByLine("input.txt")
 	fmt.Println("Part 1:", solvePartOne(input))
 	fmt.Println("Part 2:", solvePartTwo(input))
 }

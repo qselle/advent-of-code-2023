@@ -2,18 +2,10 @@ package main
 
 import (
 	"fmt"
-	"os"
+	"github.com/quentinselle/aoc/2023/utils"
 	"strconv"
 	"strings"
 )
-
-func readFileByLine(inputFile string) []string {
-	content, err := os.ReadFile(inputFile)
-	if err != nil {
-		panic(err)
-	}
-	return strings.Split(string(content), "\n")
-}
 
 type Set struct {
 	red   int
@@ -107,7 +99,7 @@ nextGame:
 }
 
 func main() {
-	input := parsePuzzleInput(readFileByLine("input.txt"))
+	input := parsePuzzleInput(utils.ReadFileByLine("input.txt"))
 	fmt.Println("Part 1:", solvePartOne(input))
 	fmt.Println("Part 2:", solvePartTwo(input))
 }
