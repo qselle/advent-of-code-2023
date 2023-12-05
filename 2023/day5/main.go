@@ -29,7 +29,9 @@ func (m Maps) SeedToLocation(seed int) int {
 nextMap:
 	for _, currMap := range m {
 		for _, currRule := range currMap.Rules {
-			start, end, dest := currRule.SourceRangeStart, currRule.SourceRangeStart+currRule.Length, currRule.DestinationRangeStart
+			start := currRule.SourceRangeStart
+			end := currRule.SourceRangeStart + currRule.Length
+			dest := currRule.DestinationRangeStart
 			if seed >= start && seed < end {
 				seed = dest + (seed - start)
 				continue nextMap
