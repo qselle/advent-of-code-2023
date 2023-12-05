@@ -2,6 +2,7 @@ package utils
 
 import (
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -18,4 +19,18 @@ func ReadFileByLine(name string) []string {
 // RuneToInt convert a rune to int
 func RuneToInt(char rune) int {
 	return int(char - '0')
+}
+
+// ExtractNumbersFromString convert a string to a slice of int
+func ExtractNumbersFromString(str string) []int {
+	numbers := make([]int, 0)
+
+	for _, number := range strings.Fields(str) {
+		number, err := strconv.Atoi(number)
+		if err != nil {
+			panic(err)
+		}
+		numbers = append(numbers, number)
+	}
+	return numbers
 }

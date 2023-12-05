@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/quentinselle/aoc/2023/utils"
 	"slices"
-	"strconv"
 	"strings"
 )
 
@@ -57,19 +56,6 @@ func (sc ScratchCards) TotalScratchCardsWin(start, end, scNumbers int) int {
 	return scNumbers
 }
 
-func extractNumbersFromString(str string) []int {
-	numbers := make([]int, 0)
-
-	for _, winningNumbers := range strings.Fields(str) {
-		number, err := strconv.Atoi(winningNumbers)
-		if err != nil {
-			panic(err)
-		}
-		numbers = append(numbers, number)
-	}
-	return numbers
-}
-
 func parseScratchCards(input []string) ScratchCards {
 	scratchCards := make(ScratchCards, 0)
 
@@ -77,8 +63,8 @@ func parseScratchCards(input []string) ScratchCards {
 		game := strings.Split(line, ":")[1]
 		allNumbers := strings.Split(game, "|")
 		scratchCards = append(scratchCards, ScratchCard{
-			extractNumbersFromString(allNumbers[0]),
-			extractNumbersFromString(allNumbers[1]),
+			utils.ExtractNumbersFromString(allNumbers[0]),
+			utils.ExtractNumbersFromString(allNumbers[1]),
 		})
 	}
 	return scratchCards
