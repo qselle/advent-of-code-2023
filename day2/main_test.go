@@ -160,3 +160,99 @@ func TestSolvePartTwo(t *testing.T) {
 		t.Errorf("solvePartTwo(%v) = %d; want %d", input, actual, expected)
 	}
 }
+
+func BenchmarkSolvePartOne(b *testing.B) {
+	input := []Game{
+		{
+			id: 1,
+			sets: []Set{
+				{red: 4, blue: 3, green: 0},
+				{red: 1, blue: 6, green: 2},
+				{red: 0, blue: 0, green: 2},
+			},
+		},
+		{
+			id: 2,
+			sets: []Set{
+				{red: 0, blue: 1, green: 2},
+				{red: 1, blue: 4, green: 3},
+				{red: 0, blue: 1, green: 1},
+			},
+		},
+		{
+			id: 3,
+			sets: []Set{
+				{red: 20, blue: 6, green: 8},
+				{red: 4, blue: 5, green: 13},
+				{red: 1, blue: 0, green: 5},
+			},
+		},
+		{
+			id: 4,
+			sets: []Set{
+				{red: 3, blue: 6, green: 1},
+				{red: 6, blue: 0, green: 3},
+				{red: 14, blue: 15, green: 3},
+			},
+		},
+		{
+			id: 5,
+			sets: []Set{
+				{red: 6, blue: 1, green: 3},
+				{red: 1, blue: 2, green: 2},
+			},
+		},
+	}
+
+	for i := 0; i < b.N; i++ {
+		solvePartTwo(input)
+	}
+}
+
+func BenchmarkSolvePartTwo(b *testing.B) {
+	input := []Game{
+		{
+			id: 1,
+			sets: []Set{
+				{red: 4, blue: 3, green: 0},
+				{red: 1, blue: 6, green: 2},
+				{red: 0, blue: 0, green: 2},
+			},
+		},
+		{
+			id: 2,
+			sets: []Set{
+				{red: 0, blue: 1, green: 2},
+				{red: 1, blue: 4, green: 3},
+				{red: 0, blue: 1, green: 1},
+			},
+		},
+		{
+			id: 3,
+			sets: []Set{
+				{red: 20, blue: 6, green: 8},
+				{red: 4, blue: 5, green: 13},
+				{red: 1, blue: 0, green: 5},
+			},
+		},
+		{
+			id: 4,
+			sets: []Set{
+				{red: 3, blue: 6, green: 1},
+				{red: 6, blue: 0, green: 3},
+				{red: 14, blue: 15, green: 3},
+			},
+		},
+		{
+			id: 5,
+			sets: []Set{
+				{red: 6, blue: 1, green: 3},
+				{red: 1, blue: 2, green: 2},
+			},
+		},
+	}
+
+	for i := 0; i < b.N; i++ {
+		solvePartTwo(input)
+	}
+}
