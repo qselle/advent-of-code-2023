@@ -13,21 +13,29 @@ type ScratchCard struct {
 	CardNumbers    []int
 }
 
-func (sc ScratchCard) TotalPointsWorth() int {
+func (sc ScratchCard) TotalMatches() int {
 	total := 0
 	for _, numbers := range sc.CardNumbers {
 		if slices.Contains(sc.WinningNumbers, numbers) {
-			if total == 0 {
-				total = 1
-			} else {
-				total *= 2
-			}
+			total++
 		}
 	}
 	return total
 }
 
-type ScratchCards map[int]ScratchCard
+func (sc ScratchCard) TotalPointsWorth() int {
+	total := 0
+	for index := 0; index < sc.TotalMatches(); index++ {
+		if index == 0 {
+			total = 1
+		} else {
+			total *= 2
+		}
+	}
+	return total
+}
+
+type ScratchCards []ScratchCard
 
 func (sc ScratchCards) TotalPointsWorth() int {
 	total := 0
@@ -35,6 +43,18 @@ func (sc ScratchCards) TotalPointsWorth() int {
 		total += scratchCard.TotalPointsWorth()
 	}
 	return total
+}
+
+func (sc ScratchCards) TotalScratchCardsWin(start, end, scNumbers int) int {
+	for index := start; index < end; index++ {
+		matches := sc[index].TotalMatches()
+		if matches > 0 {
+			// assign index to the next scratch card (padding)
+			index := index + 1
+			scNumbers = sc.TotalScratchCardsWin(index, index+matches, scNumbers+matches)
+		}
+	}
+	return scNumbers
 }
 
 func extractNumbersFromString(str string) []int {
@@ -51,19 +71,15 @@ func extractNumbersFromString(str string) []int {
 }
 
 func parseScratchCards(input []string) ScratchCards {
-	scratchCards := make(ScratchCards)
+	scratchCards := make(ScratchCards, 0)
 
 	for _, line := range input {
-		byCardId := strings.Split(line, ":")
-		id, err := strconv.Atoi(strings.TrimSpace(strings.TrimPrefix(byCardId[0], "Card ")))
-		if err != nil {
-			panic(err)
-		}
-		allNumbers := strings.Split(byCardId[1], "|")
-		scratchCards[id] = ScratchCard{
+		game := strings.Split(line, ":")[1]
+		allNumbers := strings.Split(game, "|")
+		scratchCards = append(scratchCards, ScratchCard{
 			extractNumbersFromString(allNumbers[0]),
 			extractNumbersFromString(allNumbers[1]),
-		}
+		})
 	}
 	return scratchCards
 }
@@ -72,4 +88,5 @@ func main() {
 	input := utils.ReadFileByLine("input.txt")
 	sc := parseScratchCards(input)
 	fmt.Println("Part 1:", sc.TotalPointsWorth())
+	fmt.Println("Part 2:", sc.TotalScratchCardsWin(0, len(sc), len(sc)))
 }
