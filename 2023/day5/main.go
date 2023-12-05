@@ -56,6 +56,24 @@ func (al Almanac) LowestLocationNumberFromSeed() int {
 	return lowest
 }
 
+func (al Almanac) LowestLocationNumberFromSeedRange() int {
+	actual := 0
+	lowest := 0
+
+	for index := 0; index < len(al.Seeds); index += 2 {
+		for seed := al.Seeds[index]; seed < al.Seeds[index]+al.Seeds[index+1]; seed++ {
+			actual = al.Maps.SeedToLocation(seed)
+			if lowest == 0 {
+				lowest = actual
+			}
+			if actual < lowest {
+				lowest = actual
+			}
+		}
+	}
+	return lowest
+}
+
 func parseAlmanac(input []string) Almanac {
 	almanac := Almanac{
 		Seeds: utils.ExtractNumbersFromString(strings.Split(input[0], ":")[1]),
@@ -86,4 +104,5 @@ func parseAlmanac(input []string) Almanac {
 func main() {
 	al := parseAlmanac(utils.ReadFileByLine("input.txt"))
 	fmt.Println("Part 1:", al.LowestLocationNumberFromSeed())
+	fmt.Println("Part 2:", al.LowestLocationNumberFromSeedRange())
 }
