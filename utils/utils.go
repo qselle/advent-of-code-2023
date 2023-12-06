@@ -34,3 +34,12 @@ func ExtractNumbersFromString(str string) []int {
 	}
 	return numbers
 }
+
+// ExtractNumberFromStringIgnoringSpaces convert a string to int ignoring spaces
+func ExtractNumberFromStringIgnoringSpaces(str string) int {
+	number, err := strconv.Atoi(strings.Join(strings.Fields(str), ""))
+	if err != nil {
+		panic(err)
+	}
+	return number
+}
