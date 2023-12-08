@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -18,6 +19,8 @@ const (
 	FullHouse
 	FourOfAKind
 	FiveOfAKind
+
+	MaxCardByHand = 5
 )
 
 type Occurences map[string]int
@@ -80,6 +83,34 @@ type Hand struct {
 
 type Hands []Hand
 
+func (h Hands) SortDesc() {
+	sort.Slice(h, func(i, j int) bool {
+		if h[i].Type < h[j].Type {
+			return true
+		}
+		if h[i].Type == h[j].Type {
+			for k := 0; k < MaxCardByHand; k++ {
+				if h[i].Cards[k].Strength == h[j].Cards[k].Strength {
+					continue
+				}
+				if h[i].Cards[k].Strength < h[j].Cards[k].Strength {
+					return true
+				}
+				return false
+			}
+		}
+		return false
+	})
+}
+
+func (h Hands) ComputeTotalWinnings() int {
+	total := 0
+	for i, hand := range h {
+		total += hand.Bid * (i + 1)
+	}
+	return total
+}
+
 func parseHands(input []string) Hands {
 	hands := make(Hands, 0)
 	for _, line := range input {
@@ -110,5 +141,7 @@ func parseHands(input []string) Hands {
 
 func main() {
 	input := utils.ReadFileByLine("day7/input.txt")
-	fmt.Println(parseHands(input))
+	hands := parseHands(input)
+	hands.SortDesc()
+	fmt.Println("Part 1:", hands.ComputeTotalWinnings())
 }
