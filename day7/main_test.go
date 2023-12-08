@@ -280,3 +280,67 @@ func TestComputeTotalWinningsJoker(t *testing.T) {
 		t.Errorf("Expected %v, got %v", expected, actual)
 	}
 }
+
+func BenchmarkComputeTotalWinning(b *testing.B) {
+	input := Hands{
+		{
+			Cards: []Card{
+				{Value: "3", Strength: 3},
+				{Value: "2", Strength: 2},
+				{Value: "T", Strength: 10},
+				{Value: "3", Strength: 3},
+				{Value: "K", Strength: 12},
+			},
+			Bid:  765,
+			Type: OnePair,
+		},
+		{
+			Cards: []Card{
+				{Value: "K", Strength: 12},
+				{Value: "K", Strength: 12},
+				{Value: "6", Strength: 6},
+				{Value: "7", Strength: 7},
+				{Value: "7", Strength: 7},
+			},
+			Bid:  28,
+			Type: TwoPair,
+		},
+		{
+			Cards: []Card{
+				{Value: "T", Strength: 10},
+				{Value: "5", Strength: 5},
+				{Value: "5", Strength: 5},
+				{Value: "J", Strength: 1},
+				{Value: "5", Strength: 5},
+			},
+			Bid:  684,
+			Type: FourOfAKind,
+		},
+		{
+			Cards: []Card{
+				{Value: "Q", Strength: 11},
+				{Value: "Q", Strength: 11},
+				{Value: "Q", Strength: 11},
+				{Value: "J", Strength: 1},
+				{Value: "A", Strength: 13},
+			},
+			Bid:  483,
+			Type: FourOfAKind,
+		},
+		{
+			Cards: []Card{
+				{Value: "K", Strength: 12},
+				{Value: "T", Strength: 10},
+				{Value: "J", Strength: 1},
+				{Value: "J", Strength: 1},
+				{Value: "T", Strength: 10},
+			},
+			Bid:  220,
+			Type: FourOfAKind,
+		},
+	}
+	input.SortDesc()
+	for i := 0; i < b.N; i++ {
+		input.ComputeTotalWinnings()
+	}
+}

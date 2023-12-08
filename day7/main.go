@@ -219,7 +219,7 @@ func parseHandsJoker(input []string) Hands {
 }
 
 func main() {
-	input := utils.ReadFileByLine("day7/input.txt")
+	input := utils.ReadFileByLine("input.txt")
 	hands := parseHands(input)
 	hands.SortDesc()
 	fmt.Println("Part 1:", hands.ComputeTotalWinnings())
