@@ -2,20 +2,54 @@ package main
 
 import (
 	"fmt"
-	"github.com/quentinselle/aoc/2023/utils"
 	"strconv"
 	"strings"
+
+	"github.com/quentinselle/aoc/2023/utils"
 )
 
+type Type int
+
 const (
-	FiveOfAKind = iota
-	FourOfAKind
-	FullHouse
-	ThreeOfAKind
-	TwoPair
+	HighCard Type = iota
 	OnePair
-	HigCard
+	TwoPair
+	ThreeOfAKind
+	FullHouse
+	FourOfAKind
+	FiveOfAKind
 )
+
+type Occurences map[string]int
+
+func (o Occurences) GetOccurencesType() Type {
+	if len(o) == 1 {
+		return FiveOfAKind
+	}
+	for _, occurrence := range o {
+		if occurrence == 4 {
+			return FourOfAKind
+		}
+	}
+	if len(o) == 2 {
+		return FullHouse
+	}
+	for _, occurrence := range o {
+		if occurrence == 3 {
+			return ThreeOfAKind
+		}
+	}
+	if len(o) == 3 {
+		return TwoPair
+	}
+	for _, occurrence := range o {
+		if occurrence == 2 {
+			return OnePair
+		}
+	}
+	return HighCard
+
+}
 
 var Strength = map[string]int{
 	"A": 13,
@@ -41,20 +75,7 @@ type Card struct {
 type Hand struct {
 	Cards []Card
 	Bid   int
-	Type  int
-}
-
-func (h Hand) GetHandType() {
-	previous := ""
-	count := 0
-	for _, card := range h.Cards {
-		if previous == "" {
-			previous = card.Value
-		}
-		if card.Value == previous {
-			count++
-		}
-	}
+	Type  Type
 }
 
 type Hands []Hand
@@ -68,13 +89,20 @@ func parseHands(input []string) Hands {
 			panic(err)
 		}
 		hand := Hand{Bid: bid}
+		occurrences := make(Occurences)
 		for _, card := range cards[0] {
 			card := string(card)
 			hand.Cards = append(hand.Cards, Card{
 				Value:    card,
 				Strength: Strength[card],
 			})
+			if occurrence, ok := occurrences[card]; ok {
+				occurrences[card] = occurrence + 1
+			} else {
+				occurrences[card] = 1
+			}
 		}
+		hand.Type = occurrences.GetOccurencesType()
 		hands = append(hands, hand)
 	}
 	return hands
