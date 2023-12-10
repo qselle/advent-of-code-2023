@@ -202,3 +202,93 @@ func BenchmarkStepsToReachEnd(b *testing.B) {
 		})
 	}
 }
+
+func TestStepsToReachEndGhost(t *testing.T) {
+
+	input := Maps{
+		Directions: []string{"L", "R"},
+		Nodes: map[string]Node{
+			"11A": {
+				Left:  "11B",
+				Right: "XXX",
+			},
+			"11B": {
+				Left:  "XXX",
+				Right: "11Z",
+			},
+			"11Z": {
+				Left:  "11B",
+				Right: "XXX",
+			},
+			"22A": {
+				Left:  "22B",
+				Right: "XXX",
+			},
+			"22B": {
+				Left:  "22C",
+				Right: "22C",
+			},
+			"22C": {
+				Left:  "22Z",
+				Right: "22Z",
+			},
+			"22Z": {
+				Left:  "22B",
+				Right: "22B",
+			},
+			"XXX": {
+				Left:  "XXX",
+				Right: "XXX",
+			},
+		},
+	}
+	expected := 6
+	actual := input.StepsToReachEndGhost()
+	if actual != expected {
+		t.Errorf("Expected %v, got %v", expected, actual)
+	}
+}
+
+func BenchmarkStepsToReachEndGhost(b *testing.B) {
+
+	input := Maps{
+		Directions: []string{"L", "R"},
+		Nodes: map[string]Node{
+			"11A": {
+				Left:  "11B",
+				Right: "XXX",
+			},
+			"11B": {
+				Left:  "XXX",
+				Right: "11Z",
+			},
+			"11Z": {
+				Left:  "11B",
+				Right: "XXX",
+			},
+			"22A": {
+				Left:  "22B",
+				Right: "XXX",
+			},
+			"22B": {
+				Left:  "22C",
+				Right: "22C",
+			},
+			"22C": {
+				Left:  "22Z",
+				Right: "22Z",
+			},
+			"22Z": {
+				Left:  "22B",
+				Right: "22B",
+			},
+			"XXX": {
+				Left:  "XXX",
+				Right: "XXX",
+			},
+		},
+	}
+	for i := 0; i < b.N; i++ {
+		input.StepsToReachEndGhost()
+	}
+}

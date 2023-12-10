@@ -43,3 +43,18 @@ func ExtractNumberFromStringIgnoringSpaces(str string) int {
 	}
 	return number
 }
+
+// GreatestCommonDivisor return the greatest common divisor (https://en.wikipedia.org/wiki/Greatest_common_divisor)
+// of two numbers using the Euclidean algorithm (https://en.wikipedia.org/wiki/Euclidean_algorithm see #Implementations)
+func GreatestCommonDivisor(a, b int) int {
+	if b == 0 {
+		return a
+	}
+	return GreatestCommonDivisor(b, a%b)
+}
+
+// LeastCommonMultiple return the least common multiple (https://en.wikipedia.org/wiki/Least_common_multiple see #Calculation)
+// of two numbers
+func LeastCommonMultiple(a, b int) int {
+	return a * b / GreatestCommonDivisor(a, b)
+}
