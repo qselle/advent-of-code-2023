@@ -69,37 +69,79 @@ func (t Tiles) ComputeFarthestStep() int {
 	return 0
 }
 
-func (t Tiles) Dump() {
+func (t Tiles) SolveAndDumpPart2() int {
 	count := 0
-	for _, pipes := range t {
-		inside := false
-		for _, pipe := range pipes {
+	for y, pipes := range t {
+		// inside := false
+		border := 0
+		last := 0
+		for x, pipe := range pipes {
 			if pipe.Border {
 				if isStartingPoint(pipe.Value) {
+					start := 0
 					fmt.Print("░")
-					inside = !inside
+					if y > 0 && t[y-1][x].Value&South != 0 {
+						start = start | North
+					}
+					if x > 0 && t[y][x-1].Value&East != 0 {
+						start = start | West
+					}
+					if y < len(t)-1 && t[y+1][x].Value&North != 0 {
+						start = start | South
+					}
+					if x < len(pipes)-1 && t[y][x+1].Value&West != 0 {
+						start = start | East
+					}
+
+					if start&North != 0 && start&South != 0 {
+						border++
+					} else if start&North != 0 && start&East != 0 {
+						// in
+						last = start
+					} else if start&North != 0 && start&West != 0 {
+						// out
+						if last&South != 0 {
+							border++
+						}
+					} else if start&South != 0 && start&West != 0 {
+						// out
+						if last&North != 0 {
+							border++
+						}
+					} else if start&South != 0 && start&East != 0 {
+						// in
+						last = start
+					}
 				} else if pipe.Value&North != 0 && pipe.Value&South != 0 {
 					fmt.Print("│")
-					inside = !inside
+					border++
 				} else if pipe.Value&East != 0 && pipe.Value&West != 0 {
 					fmt.Print("─")
 				} else if pipe.Value&North != 0 && pipe.Value&East != 0 {
+					// in
 					fmt.Print("└")
-					inside = !inside
+					last = pipe.Value
 				} else if pipe.Value&North != 0 && pipe.Value&West != 0 {
+					// out
 					fmt.Print("┘")
-					inside = !inside
+					if last&South != 0 {
+						border++
+					}
 				} else if pipe.Value&South != 0 && pipe.Value&West != 0 {
+					// out
 					fmt.Print("┐")
-					// inside = !inside
+					if last&North != 0 {
+						border++
+					}
 				} else if pipe.Value&South != 0 && pipe.Value&East != 0 {
+					// in
 					fmt.Print("┌")
-					// inside = !inside
+					last = pipe.Value
 				}
 			} else {
-				if inside {
-					count++
+				if border%2 != 0 {
 					fmt.Print("█")
+					count++
 				} else {
 					fmt.Print(" ")
 				}
@@ -107,7 +149,7 @@ func (t Tiles) Dump() {
 		}
 		fmt.Println()
 	}
-	fmt.Println("Part 2", count)
+	return count
 }
 func parseTiles(input []string) Tiles {
 	tiles := make([][]Tile, len(input))
@@ -126,5 +168,5 @@ func main() {
 	input := utils.ReadFileByLine("input.txt")
 	tiles := parseTiles(input)
 	fmt.Println("Part 1:", tiles.ComputeFarthestStep())
-	tiles.Dump()
+	fmt.Println("Part 2:", tiles.SolveAndDumpPart2())
 }
