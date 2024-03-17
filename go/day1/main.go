@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
-	"github.com/quentinselle/aoc/2023/utils"
 	"strings"
 	"sync"
 	"unicode"
+
+	"github.com/quentinselle/aoc/2023/go/utils"
 )
 
 var (

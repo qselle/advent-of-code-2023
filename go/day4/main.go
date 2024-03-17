@@ -2,9 +2,10 @@ package main
 
 import (
 	"fmt"
-	"github.com/quentinselle/aoc/2023/utils"
 	"slices"
 	"strings"
+
+	"github.com/quentinselle/aoc/2023/go/utils"
 )
 
 type ScratchCard struct {

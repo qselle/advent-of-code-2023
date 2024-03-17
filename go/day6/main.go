@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/quentinselle/aoc/2023/utils"
+	"github.com/quentinselle/aoc/2023/go/utils"
 )
 
 type Race struct {

@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/quentinselle/aoc/2023/utils"
 	"strings"
+
+	"github.com/quentinselle/aoc/2023/go/utils"
 )
 
 type Rule struct {
