@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"unicode"
 
-	"github.com/quentinselle/aoc/2023/go/utils"
+	"github.com/qselle/advent-of-code-2023/utils"
 )
 
 type Coordinates struct {

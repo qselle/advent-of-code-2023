@@ -5,7 +5,7 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/quentinselle/aoc/2023/go/utils"
+	"github.com/qselle/advent-of-code-2023/utils"
 )
 
 type ScratchCard struct {
