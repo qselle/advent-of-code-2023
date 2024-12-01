@@ -1,6 +1,8 @@
 [![Go](https://github.com/qselle/advent-of-code-2023/actions/workflows/go.yml/badge.svg)](https://github.com/qselle/advent-of-code-2023/actions/workflows/go.yml) [![wakatime](https://wakatime.com/badge/github/qselle/advent-of-code-2023.svg)](https://wakatime.com/badge/github/qselle/advent-of-code-2023)
 # Advent of code 2023 🎄🎅
 
+In Go, which I'm using the most at the moment.
+
 Enter the competition: https://adventofcode.com/2023
 
 ## Build
